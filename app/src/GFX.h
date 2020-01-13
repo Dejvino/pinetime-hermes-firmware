@@ -37,11 +37,15 @@ public:
   virtual void writeFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color);
   virtual void endWrite(void);
 
+  void openBuffer(int16_t x, int16_t y, int16_t w, int16_t h);
+  void flushBuffer();
 
 private:
 	struct device *display_dev;
 	struct display_buffer_descriptor pixelBufferDesc;
         
+	u8_t *buffer;
+	int16_t bx, by, bw, bh;
 };
 
 /**

@@ -50,18 +50,22 @@ void setup(void) {
 u16_t clock = 0;
 inline void loop() {
 	char clockText[16];
-	int s = clock % 60;
-	int m = (clock / 60) % 60;
-	int h = (clock / 60 / 60) % 24;
-	sprintf(clockText, "%02d:%02d:%02d", h, m, s);
+	int ts = clock % 60;
+	int tm = (clock / 60) % 60;
+	int th = (clock / 60 / 60) % 24;
+	sprintf(clockText, "%02d:%02d:%02d", th, tm, ts);
 
 	int x = 25;
 	int y = 100;
+	int w = tft->width() - x*2;
+	int h = tft->height() - y*2;
+	tft->openBuffer(x, y, w, h);
 	tft->setCursor(x, y);
 	tft->setTextSize(4);
 	tft->setTextColor(ST77XX_GREEN);
-	tft->fillRect(x, y, tft->width() - x*2, tft->height() - y*2, ST77XX_BLACK);
+	tft->fillRect(x, y, w, h, ST77XX_BLACK);
 	tft->print(clockText);
+	tft->flushBuffer();
 
 	delay(100);
 
