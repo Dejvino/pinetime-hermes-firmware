@@ -38,6 +38,10 @@ Follow the official steps: https://docs.zephyrproject.org/latest/getting_started
   
 Enjoy!
 
+# Current Status
+* **clock** - renders green digital clock with low precision time updates
+* **power management** - backlight is enabled by holding the button
+
 # Related Links
 * Hermes Companion App: https://github.com/Dejvino/pinetime-hermes-companion.git
 * PineTime Zephyr Toolkit: https://github.com/Dejvino/pinetime-zephyr
