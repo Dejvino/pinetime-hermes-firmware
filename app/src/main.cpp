@@ -70,6 +70,36 @@ void draw_battery() {
 	tft->flushBuffer();
 }
 
+void draw_bt_status() {
+	uint8_t bt_status = bt_get_connection_status();
+
+	uint16_t color;
+	switch (bt_status) {
+		case BT_STATUS_DISCONNECTED:
+			color = ST77XX_RED;
+			break;
+		case BT_STATUS_CONNECTING:
+			color = ST77XX_ORANGE;
+			break;
+		case BT_STATUS_CONNECTED:
+			color = ST77XX_GREEN;
+			break;
+		default:
+			color = ST77XX_MAGENTA;
+	}
+	int w = 20;
+	int h = 15;
+	int x = 0;
+	int y = 0;
+	//tft->openBuffer(x, y, w, h);
+	tft->setCursor(x, y);
+	tft->setTextSize(2);
+	tft->setTextColor(color);
+	//tft->fillRect(x, y, w, h, ST77XX_BLACK); // no need for now
+	tft->print("BT");
+	//tft->flushBuffer();
+}
+
 void setup(void) {
 	// HW
 	clock_init();
@@ -91,6 +121,7 @@ void setup(void) {
 inline void loop() {
 	draw_clock();
 	draw_battery();
+	draw_bt_status();
 
 	delay(999);
 

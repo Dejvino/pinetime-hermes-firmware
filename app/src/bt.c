@@ -22,7 +22,10 @@
 #include <bluetooth/services/bas.h>
 #include <bluetooth/services/hrs.h>
 
+#include "bt.h"
 #include "cts.h"
+
+static uint8_t bt_connection_status = BT_STATUS_DISCONNECTED;
 
 /* Custom Service Variables */
 static struct bt_uuid_128 vnd_uuid = BT_UUID_INIT_128(
@@ -362,4 +365,12 @@ void bt_loop()
 				indicating = 1U;
 			}
 		}
+
+	// TODO: real status
+	bt_connection_status = (bt_connection_status + 1) % 3;
+}
+
+uint8_t bt_get_connection_status()
+{
+	return bt_connection_status;
 }

@@ -27,3 +27,7 @@
 void bt_setup(void);
 void bt_loop();
 
+#define BT_STATUS_DISCONNECTED  0
+#define BT_STATUS_CONNECTING    1
+#define BT_STATUS_CONNECTED     2
+uint8_t bt_get_connection_status();

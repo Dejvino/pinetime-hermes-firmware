@@ -8,6 +8,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#ifndef CTS_H
+#define CTS_H
 #include <stddef.h>
 #include <inttypes.h>
 
@@ -37,4 +39,5 @@ void cts_get_datetime(cts_datetime_t*);
 
 #ifdef __cplusplus
 }
+#endif
 #endif
