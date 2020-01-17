@@ -7,7 +7,12 @@ LOG_MODULE_REGISTER(app, LOG_LEVEL_INF);
 #include <drivers/gpio.h>
 #include <sys/util.h>
 #include <inttypes.h>
-
+#include <time.h>
+extern "C" {
+#include "clock.h"
+#include "bt.h"
+#include "cts_sync.h"
+}
 #include "GFX.h"
 GFX* tft;
 
@@ -37,6 +42,7 @@ void display_init() {
 	tft = createGFX(display_dev);
 
 	tft->fillScreen(ST77XX_BLACK);
+	printk("Display inited.\n");
 }
 
 struct device* backlight_dev;
@@ -51,6 +57,7 @@ static void backlight_init(void)
     /* If you have a backlight, set it up and turn it on here */
 	gpio_pin_configure(backlight_dev, LED, GPIO_DIR_OUT);
 	backlight_enable(true);
+	printk("Backlight inited.\n");
 }
 
 void delay(int ms) {
@@ -97,7 +104,9 @@ bool isButtonPressed() {
 void button_pressed(struct device *gpiob, struct gpio_callback *cb,
 		u32_t pins)
 {
-	backlight_enable(isButtonPressed());
+	bool b = isButtonPressed();
+	printk("Button pressed: %d\n", b);
+	backlight_enable(b);
 }
 
 static struct gpio_callback gpio_cb;
@@ -122,21 +131,18 @@ void button_init()
 //port 15 has to be high in order for the button to work
 	gpio_pin_configure(button_dev, 15,GPIO_DIR_OUT); //push button out
 	gpio_pin_write(button_dev, 15, button_out); //set port high
+	printk("Button inited.\n");
 }
 
-void setup(void) {
-	backlight_init();
-	button_init();
-	display_init();	
-}
+void draw_clock() {
+	struct tm* tm_ptr = clock_get_datetime();
+	uint8_t hours = tm_ptr->tm_hour;
+	uint8_t minutes = tm_ptr->tm_min;
+	uint8_t seconds = tm_ptr->tm_sec;
 
-u16_t clock = 0;
-inline void loop() {
-	char clockText[16];
-	int ts = clock % 60;
-	int tm = (clock / 60) % 60;
-	int th = (clock / 60 / 60) % 24;
-	sprintf(clockText, "%02d:%02d:%02d", th, tm, ts);
+	static char clockText[32];
+	sprintf(clockText, "%02d:%02d:%02d",
+		hours, minutes, seconds);
 
 	int x = 25;
 	int y = 100;
@@ -149,11 +155,28 @@ inline void loop() {
 	tft->fillRect(x, y, w, h, ST77XX_BLACK);
 	tft->print(clockText);
 	tft->flushBuffer();
+}
 
+void setup(void) {
+	clock_init();
+	backlight_init();
+	button_init();
+	display_init();	
+	bt_setup();
+	cts_sync_init();
+
+	printk("Setup complete.\n");
+}
+
+inline void loop() {
+	draw_clock();
 	backlight_enable(isButtonPressed());
+
 	delay(999);
 
-	clock++;
+	clock_loop();
+	bt_loop();
+	cts_sync_loop();
 }
 
 void main(void)

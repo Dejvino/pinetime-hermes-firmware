@@ -5,6 +5,6 @@ include($ENV{ZEPHYR_BASE}/cmake/app/boilerplate.cmake NO_POLICY_SCOPE)
 project(hermes)
 
 include_directories(include)
-FILE(GLOB_RECURSE app_sources include/*.cpp src/*.cpp)
+FILE(GLOB_RECURSE app_sources include/*.cpp include/*.c src/*.cpp src/*.c)
 target_sources(app PRIVATE ${app_sources} src/main.cpp)
 
