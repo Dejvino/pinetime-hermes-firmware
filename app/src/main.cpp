@@ -14,6 +14,7 @@ extern "C" {
 #include "backlight.h"
 #include "display.h"
 #include "button.h"
+#include "battery.h"
 #include "bt.h"
 // Services
 #include "powersave.h"
@@ -50,12 +51,32 @@ void draw_clock() {
 	tft->flushBuffer();
 }
 
+void draw_battery() {
+	uint8_t battery_percent = battery_get_percent();
+
+	static char text[16];
+	sprintf(text, "%02d%s", battery_percent, "%");
+
+	int w = 40;
+	int h = 15;
+	int x = tft->width() - w;
+	int y = 0;
+	tft->openBuffer(x, y, w, h);
+	tft->setCursor(x, y);
+	tft->setTextSize(2);
+	tft->setTextColor(ST77XX_GREEN);
+	tft->fillRect(x, y, w, h, ST77XX_BLACK);
+	tft->print(text);
+	tft->flushBuffer();
+}
+
 void setup(void) {
 	// HW
 	clock_init();
 	backlight_init();
 	button_init();
-	display_init();	
+	display_init();
+	battery_init();	
 	bt_setup();
 	// Services
 	powersave_init();
@@ -69,11 +90,13 @@ void setup(void) {
 
 inline void loop() {
 	draw_clock();
+	draw_battery();
 
 	delay(999);
 
 	// HW
 	clock_loop();
+	battery_loop();
 	bt_loop();
 
 	// Services
