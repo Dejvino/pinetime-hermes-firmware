@@ -8,9 +8,7 @@
 
 struct device* backlight_dev;
 
-void backlight_enable(bool enable) {
-	gpio_pin_write(backlight_dev, LED, enable ? 0 : 1);
-}
+static bool backlight_enabled = false;
 
 void backlight_init(void)
 {
@@ -19,4 +17,14 @@ void backlight_init(void)
 	gpio_pin_configure(backlight_dev, LED, GPIO_DIR_OUT);
 	backlight_enable(true);
 	printk("Backlight inited.\n");
+}
+
+void backlight_enable(bool enable) {
+	gpio_pin_write(backlight_dev, LED, enable ? 0 : 1);
+    backlight_enabled = enable;
+}
+
+bool backlight_is_enabled()
+{
+    return backlight_enabled;
 }

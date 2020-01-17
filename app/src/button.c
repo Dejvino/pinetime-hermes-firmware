@@ -47,7 +47,9 @@ void button_pressed(struct device *gpiob, struct gpio_callback *cb,
     // TODO: callback!
 	bool b = isButtonPressed();
 	printk("Button pressed: %d\n", b);
-	backlight_enable(b);
+	if (b) {
+        backlight_enable(b);
+    }
 }
 
 static struct gpio_callback gpio_cb;

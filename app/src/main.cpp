@@ -9,11 +9,14 @@ LOG_MODULE_REGISTER(app, LOG_LEVEL_INF);
 #include <inttypes.h>
 #include <time.h>
 extern "C" {
+// HW
 #include "clock.h"
 #include "backlight.h"
 #include "display.h"
 #include "button.h"
 #include "bt.h"
+// Services
+#include "powersave.h"
 #include "cts_sync.h"
 }
 
@@ -48,11 +51,14 @@ void draw_clock() {
 }
 
 void setup(void) {
+	// HW
 	clock_init();
 	backlight_init();
 	button_init();
 	display_init();	
 	bt_setup();
+	// Services
+	powersave_init();
 	cts_sync_init();
 
 	tft = createGFX(display_get_device());
@@ -63,12 +69,15 @@ void setup(void) {
 
 inline void loop() {
 	draw_clock();
-	backlight_enable(isButtonPressed());
 
 	delay(999);
 
+	// HW
 	clock_loop();
 	bt_loop();
+
+	// Services
+	powersave_loop();
 	cts_sync_loop();
 }
 
