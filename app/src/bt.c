@@ -233,12 +233,14 @@ static void connected(struct bt_conn *conn, u8_t err)
 		printk("Connection failed (err 0x%02x)\n", err);
 	} else {
 		printk("Connected\n");
+		bt_connection_status = BT_STATUS_CONNECTED;
 	}
 }
 
 static void disconnected(struct bt_conn *conn, u8_t reason)
 {
 	printk("Disconnected (reason 0x%02x)\n", reason);
+	bt_connection_status = BT_STATUS_DISCONNECTED;
 }
 
 static struct bt_conn_cb conn_callbacks = {
@@ -341,33 +343,30 @@ void bt_loop()
 	 * of starting delayed work so we do it here
 	 */
 
-		/* Current Time Service updates only when time is changed */
-		cts_notify();
+	/* Current Time Service updates only when time is changed */
+	cts_notify();
 
-		/* Heartrate measurements simulation */
-		hrs_notify();
+	/* Heartrate measurements simulation */
+	hrs_notify();
 
-		/* Battery level simulation */
-		bas_notify();
+	/* Battery level simulation */
+	bas_notify();
 
-		/* Vendor indication simulation */
-		if (simulate_vnd) {
-			if (indicating) {
-				return;
-			}
-
-			ind_params.attr = &vnd_svc.attrs[2];
-			ind_params.func = indicate_cb;
-			ind_params.data = &indicating;
-			ind_params.len = sizeof(indicating);
-
-			if (bt_gatt_indicate(NULL, &ind_params) == 0) {
-				indicating = 1U;
-			}
+	/* Vendor indication simulation */
+	if (simulate_vnd) {
+		if (indicating) {
+			return;
 		}
 
-	// TODO: real status
-	bt_connection_status = (bt_connection_status + 1) % 3;
+		ind_params.attr = &vnd_svc.attrs[2];
+		ind_params.func = indicate_cb;
+		ind_params.data = &indicating;
+		ind_params.len = sizeof(indicating);
+
+		if (bt_gatt_indicate(NULL, &ind_params) == 0) {
+			indicating = 1U;
+		}
+	}
 }
 
 uint8_t bt_get_connection_status()
