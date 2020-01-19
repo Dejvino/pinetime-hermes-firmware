@@ -18,6 +18,7 @@ extern "C" {
 #include "bt.h"
 // Services
 #include "powersave.h"
+#include "bt_connect.h"
 #include "cts_sync.h"
 }
 
@@ -116,6 +117,7 @@ void setup(void) {
 	// Services
 	LOG_INF("App setup: services");
 	powersave_init();
+	bt_connect_init();
 	cts_sync_init();
 
 	tft = createGFX(display_get_device());
@@ -139,6 +141,7 @@ inline void loop() {
 
 	// Services
 	powersave_loop();
+	bt_connect_loop();
 	cts_sync_loop();
 }
 
