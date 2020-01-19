@@ -1,6 +1,3 @@
-#include <logging/log.h>
-LOG_MODULE_REGISTER(app, LOG_LEVEL_INF);
-
 #include <zephyr.h>
 #include <device.h>
 #include <display.h>
@@ -8,8 +5,11 @@ LOG_MODULE_REGISTER(app, LOG_LEVEL_INF);
 #include <sys/util.h>
 #include <inttypes.h>
 #include <time.h>
+#include <settings/settings.h>
 extern "C" {
+#include "log.h"
 // HW
+#include "storage.h"
 #include "clock.h"
 #include "backlight.h"
 #include "display.h"
@@ -100,22 +100,28 @@ void draw_bt_status() {
 	//tft->flushBuffer();
 }
 
-void setup(void) {
+void setup(void) {	
+
+    settings_subsys_init();
 	// HW
+	LOG_INF("App setup: hardware");
+	storage_init();
 	clock_init();
 	backlight_init();
 	button_init();
 	display_init();
 	battery_init();	
 	bt_setup();
+
 	// Services
+	LOG_INF("App setup: services");
 	powersave_init();
 	cts_sync_init();
 
 	tft = createGFX(display_get_device());
 	tft->fillScreen(ST77XX_BLACK);
 
-	printk("Setup complete.\n");
+	LOG_INF("App setup complete.");
 }
 
 inline void loop() {
@@ -126,6 +132,7 @@ inline void loop() {
 	delay(999);
 
 	// HW
+	storage_loop();
 	clock_loop();
 	battery_loop();
 	bt_loop();

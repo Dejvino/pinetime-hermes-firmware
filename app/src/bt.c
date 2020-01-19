@@ -22,6 +22,7 @@
 #include <bluetooth/services/bas.h>
 #include <bluetooth/services/hrs.h>
 
+#include "log.h"
 #include "bt.h"
 #include "cts.h"
 
@@ -230,16 +231,16 @@ static const struct bt_data ad[] = {
 static void connected(struct bt_conn *conn, u8_t err)
 {
 	if (err) {
-		printk("Connection failed (err 0x%02x)\n", err);
+		LOG_WRN("BT Connection failed (err 0x%02x).", err);
 	} else {
-		printk("Connected\n");
+		LOG_INF("BT Connected.");
 		bt_connection_status = BT_STATUS_CONNECTED;
 	}
 }
 
 static void disconnected(struct bt_conn *conn, u8_t reason)
 {
-	printk("Disconnected (reason 0x%02x)\n", reason);
+	LOG_INF("BT Disconnected (reason 0x%02x).", reason);
 	bt_connection_status = BT_STATUS_DISCONNECTED;
 }
 
@@ -253,10 +254,6 @@ static void bt_ready(void)
 	int err;
 
 	cts_init();
-
-	if (IS_ENABLED(CONFIG_SETTINGS)) {
-		settings_load();
-	}
 
 	err = bt_le_adv_start(BT_LE_ADV_CONN_NAME, ad, ARRAY_SIZE(ad), NULL, 0);
 	if (err) {
@@ -328,8 +325,6 @@ void bt_setup(void)
 	}
 
 	bt_ready();
-
-	//bt_set_name("PineTime Hermes");
 
 	bt_conn_cb_register(&conn_callbacks);
 	bt_conn_auth_cb_register(&auth_cb_display);

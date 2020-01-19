@@ -2,6 +2,7 @@
 #include <inttypes.h>
 #include <time.h>
 #include <sys/printk.h>
+#include "log.h"
 #include "clock.h"
 
 /**
@@ -33,6 +34,7 @@ struct tm* clock_get_datetime()
 void clock_set_datetime(struct tm* datetime)
 {
     local_time = mktime(datetime);
-    printk("Local clock se to: %02d:%02d:%02d\n",
-        datetime->tm_hour, datetime->tm_min, datetime->tm_sec);
+    LOG_INF("Local clock se to: %02d:%02d:%02d, %04d-%02d-%02d\n",
+        datetime->tm_hour, datetime->tm_min, datetime->tm_sec,
+		datetime->tm_year, datetime->tm_mon, datetime->tm_mday);
 }
