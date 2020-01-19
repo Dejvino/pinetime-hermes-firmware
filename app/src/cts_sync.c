@@ -91,6 +91,19 @@ u8_t cts_sync_service_discovered(struct bt_conn* conn, const struct bt_gatt_attr
     return BT_GATT_ITER_STOP;
 }
 
+static void cts_sync_processor(struct bt_conn *conn, void *data)
+{
+    memcpy(&uuid, BT_UUID_CTS_CURRENT_TIME, sizeof(uuid));
+    cts_discovery_params.func = cts_sync_service_discovered;
+    cts_discovery_params.start_handle = 0x0001;
+    cts_discovery_params.end_handle = 0xFFFF;
+    cts_discovery_params.type = BT_GATT_DISCOVER_CHARACTERISTIC;
+    cts_discovery_params.uuid = &uuid;
+
+    if (bt_gatt_discover(conn, &cts_discovery_params) != 0) {
+        LOG_ERR("CTS Sync > GATT discovery FAILED.\n");
+    }
+}
 
 static void connected(struct bt_conn *conn, u8_t err)
 {
@@ -114,20 +127,6 @@ void cts_sync_init()
     bt_conn_cb_register(&conn_callbacks);
     cts_register_write_cb(cts_write_cb);
     sync_local_cts_to_clock();
-}
-
-static void cts_sync_processor(struct bt_conn *conn, void *data)
-{
-    memcpy(&uuid, BT_UUID_CTS_CURRENT_TIME, sizeof(uuid));
-    cts_discovery_params.func = cts_sync_service_discovered;
-    cts_discovery_params.start_handle = 0x0001;
-    cts_discovery_params.end_handle = 0xFFFF;
-    cts_discovery_params.type = BT_GATT_DISCOVER_CHARACTERISTIC;
-    cts_discovery_params.uuid = &uuid;
-
-    if (bt_gatt_discover(conn, &cts_discovery_params) != 0) {
-        LOG_ERR("CTS Sync > GATT discovery FAILED.\n");
-    }
 }
 
 void cts_sync_loop()
