@@ -54,6 +54,8 @@ Enjoy!
   * synchronizes its clock from a connected device (if it provides CTS service).
 
 # Related Links
-* Hermes Companion App: https://github.com/Dejvino/pinetime-hermes-companion.git
+* Hermes Companion Apps: https://github.com/Dejvino/pinetime-hermes-companion
+   * Linux / PinePhone: [companion-linux](https://github.com/Dejvino/pinetime-hermes-companion-linux)
+   * Android: [companion-android](https://github.com/Dejvino/pinetime-hermes-companion-android)
 * PineTime Zephyr Toolkit: https://github.com/Dejvino/pinetime-zephyr
 
