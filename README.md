@@ -35,12 +35,23 @@ Follow the official steps: https://docs.zephyrproject.org/latest/getting_started
   ```
   west flash
   ```
+  or
+  ```
+  ./jlink-flash.sh
+  ```
   
 Enjoy!
 
 # Current Status
-* **clock** - renders green digital clock with low precision time updates
-* **power management** - backlight is enabled by holding the button
+* **clock**
+  * renders green digital clock with low precision time updates.
+* **power management**
+  * backlight is enabled by holding the button, remains turned on for a few seconds.
+  * mocked battery level is shown on the display
+* **Bluetooth**
+  * connection status is indicated on the display
+  * advertises mock Battery level, Heart-rate sensor data, Current Time Service (CTS).
+  * synchronizes its clock from a connected device (if it provides CTS service).
 
 # Related Links
 * Hermes Companion App: https://github.com/Dejvino/pinetime-hermes-companion.git
