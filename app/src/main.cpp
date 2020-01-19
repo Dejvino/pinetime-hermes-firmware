@@ -105,7 +105,7 @@ void setup(void) {
     settings_subsys_init();
 	// HW
 	LOG_INF("App setup: hardware");
-	storage_init();
+	//storage_init();
 	clock_init();
 	backlight_init();
 	button_init();
@@ -132,7 +132,7 @@ inline void loop() {
 	delay(999);
 
 	// HW
-	storage_loop();
+	//storage_loop();
 	clock_loop();
 	battery_loop();
 	bt_loop();

@@ -55,14 +55,6 @@ void storage_init()
     storage_write(TEST_ID, &test, 1);
     */
 
-    if (IS_ENABLED(CONFIG_SETTINGS)) {
-		LOG_INF("Settings loading.");
-
-		settings_load();
-	} else {
-		LOG_INF("Settings not enabled");
-	}
-
     LOG_INF("Storage inited.");
 }
 

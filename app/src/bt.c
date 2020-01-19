@@ -28,6 +28,10 @@
 
 static uint8_t bt_connection_status = BT_STATUS_DISCONNECTED;
 
+static bool advertising = false;
+#define ADVERTISING_TIMEOUT 10
+static u16_t advertising_timeout = ADVERTISING_TIMEOUT;
+
 /* Custom Service Variables */
 static struct bt_uuid_128 vnd_uuid = BT_UUID_INIT_128(
 	0xf0, 0xde, 0xbc, 0x9a, 0x78, 0x56, 0x34, 0x12,
@@ -249,19 +253,52 @@ static struct bt_conn_cb conn_callbacks = {
 	.disconnected = disconnected,
 };
 
-static void bt_ready(void)
+static void bt_advertising_stop()
 {
-	int err;
-
-	cts_init();
-
-	err = bt_le_adv_start(BT_LE_ADV_CONN_NAME, ad, ARRAY_SIZE(ad), NULL, 0);
-	if (err) {
-		printk("Bluetooth advertising failed to start (err %d)\n", err);
+	if (!advertising) {
 		return;
 	}
 
-	printk("Bluetooth advertising successfully started\n");
+	int err = bt_le_adv_stop();
+	if (err) {
+		LOG_ERR("Bluetooth advertising failed to stop (err %d).", err);
+		advertising = true;
+		return;
+	}
+	advertising = false;
+	advertising_timeout = ADVERTISING_TIMEOUT;
+	LOG_INF("Bluetooth advertising successfully stopped.");
+}
+
+static void bt_advertising_start()
+{
+	if (advertising) {
+		return;
+	}
+
+	int err = bt_le_adv_start(BT_LE_ADV_CONN_NAME, ad, ARRAY_SIZE(ad), NULL, 0);
+	if (err) {
+		LOG_ERR("Bluetooth advertising failed to start (err %d).", err);
+		advertising = false;
+		advertising_timeout = ADVERTISING_TIMEOUT;
+		return;
+	}
+	advertising = true;
+	LOG_INF("Bluetooth advertising successfully started.");
+}
+
+static void bt_ready(void)
+{
+	if (IS_ENABLED(CONFIG_SETTINGS)) {
+		LOG_INF("Settings loading.");
+		settings_load();
+	} else {
+		LOG_INF("Settings not enabled");
+	}
+
+	cts_init();
+
+	bt_advertising_start();
 }
 
 static void auth_passkey_display(struct bt_conn *conn, unsigned int passkey)
@@ -270,7 +307,7 @@ static void auth_passkey_display(struct bt_conn *conn, unsigned int passkey)
 
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 
-	printk("Passkey for %s: %06u\n", addr, passkey);
+	LOG_INF("Passkey for %s: %06u\n", addr, passkey);
 }
 
 static void auth_cancel(struct bt_conn *conn)
@@ -279,7 +316,7 @@ static void auth_cancel(struct bt_conn *conn)
 
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 
-	printk("Pairing cancelled: %s\n", addr);
+	LOG_INF("Pairing cancelled: %s\n", addr);
 }
 
 static struct bt_conn_auth_cb auth_cb_display = {
@@ -320,7 +357,7 @@ void bt_setup(void)
 
 	err = bt_enable(NULL);
 	if (err) {
-		printk("Bluetooth init failed (err %d)\n", err);
+		LOG_ERR("Bluetooth init failed (err %d)\n", err);
 		return;
 	}
 
@@ -329,7 +366,7 @@ void bt_setup(void)
 	bt_conn_cb_register(&conn_callbacks);
 	bt_conn_auth_cb_register(&auth_cb_display);
 
-	printk("Bluetooth inited.");
+	LOG_INF("Bluetooth inited.");
 }
 
 void bt_loop()
@@ -360,6 +397,15 @@ void bt_loop()
 
 		if (bt_gatt_indicate(NULL, &ind_params) == 0) {
 			indicating = 1U;
+		}
+	}
+
+	if (!advertising) {
+		if (advertising_timeout <= 0) {
+			bt_advertising_start();
+			advertising_timeout = ADVERTISING_TIMEOUT;
+		} else {
+			advertising_timeout--;
 		}
 	}
 }
