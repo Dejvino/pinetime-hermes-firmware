@@ -19,6 +19,7 @@ extern "C" {
 // Services
 #include "powersave.h"
 #include "cts_sync.h"
+#include "bt_notify_service.h"
 }
 
 #include "GFX.h"
@@ -117,6 +118,7 @@ void setup(void) {
 	LOG_INF("App setup: services");
 	powersave_init();
 	cts_sync_init();
+	bt_notify_service_init();
 
 	tft = createGFX(display_get_device());
 	tft->fillScreen(ST77XX_BLACK);
@@ -129,7 +131,7 @@ inline void loop() {
 	draw_battery();
 	draw_bt_status();
 
-	delay(999);
+	delay(990);
 
 	// HW
 	//storage_loop();
@@ -140,6 +142,7 @@ inline void loop() {
 	// Services
 	powersave_loop();
 	cts_sync_loop();
+	bt_notify_service_loop();
 }
 
 void main(void)
