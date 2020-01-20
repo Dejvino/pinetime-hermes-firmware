@@ -5,10 +5,10 @@
 #include <bluetooth/uuid.h>
 #include <bluetooth/gatt.h>
 #include "log.h"
-#include "cts_sync.h"
-#include "bt.h"
+#include <hw/clock.h>
+#include <hw/bt.h>
 #include "cts.h"
-#include "clock.h"
+#include "cts_sync.h"
 
 #define TIME_SYNC_WAIT 60 // TODO: tune
 int time_sync_timeout = TIME_SYNC_WAIT;

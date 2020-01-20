@@ -22,8 +22,6 @@
 #include <bluetooth/services/bas.h>
 #include <bluetooth/services/hrs.h>
 
-#include "cts.h"
-
 void bt_setup(void);
 void bt_loop();
 

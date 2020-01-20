@@ -1,7 +1,7 @@
 #include "zephyr.h"
-#include "backlight.h"
-#include "button.h"
-#include "clock.h"
+#include <hw/backlight.h>
+#include <hw/button.h>
+#include <hw/clock.h>
 #include "powersave.h"
 
 time_t last_event = 0;

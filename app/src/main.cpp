@@ -7,22 +7,21 @@
 #include <time.h>
 #include <settings/settings.h>
 extern "C" {
-#include "log.h"
-// HW
-#include "storage.h"
-#include "clock.h"
-#include "backlight.h"
-#include "display.h"
-#include "button.h"
-#include "battery.h"
-#include "bt.h"
-// Services
-#include "powersave.h"
-#include "cts_sync.h"
-#include "bt_notify_service.h"
+#include "lib/log.h"
+#include "hw/storage.h"
+#include "hw/clock.h"
+#include "hw/backlight.h"
+#include "hw/display.h"
+#include "hw/button.h"
+#include "hw/battery.h"
+#include "hw/bt.h"
+#include "service/powersave.h"
+#include "service/cts.h"
+#include "service/cts_sync.h"
+#include "service/bt_notify_service.h"
 }
 
-#include "GFX.h"
+#include "lib/GFX.h"
 GFX* tft;
 
 void delay(int ms) {
@@ -117,6 +116,7 @@ void setup(void) {
 	// Services
 	LOG_INF("App setup: services");
 	powersave_init();
+	cts_init();
 	cts_sync_init();
 	bt_notify_service_init();
 
@@ -141,6 +141,7 @@ inline void loop() {
 
 	// Services
 	powersave_loop();
+	cts_loop();
 	cts_sync_loop();
 	bt_notify_service_loop();
 }

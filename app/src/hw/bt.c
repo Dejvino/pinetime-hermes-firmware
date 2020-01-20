@@ -24,7 +24,6 @@
 
 #include "log.h"
 #include "bt.h"
-#include "cts.h"
 
 static uint8_t bt_connection_status = BT_STATUS_DISCONNECTED;
 
@@ -105,8 +104,6 @@ static void bt_ready(void)
 		LOG_INF("Settings not enabled");
 	}
 
-	cts_init();
-
 	bt_advertising_start();
 }
 
@@ -183,9 +180,6 @@ void bt_loop()
 	/* Implement notification. At the moment there is no suitable way
 	 * of starting delayed work so we do it here
 	 */
-
-	/* Current Time Service updates only when time is changed */
-	cts_notify();
 
 	/* Heartrate measurements simulation */
 	hrs_notify();

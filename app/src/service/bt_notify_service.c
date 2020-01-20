@@ -16,7 +16,7 @@
 #include <bluetooth/services/hrs.h>
 
 #include "log.h"
-#include "bt.h"
+#include <hw/bt.h>
 
 /* Custom Service Variables */
 static struct bt_uuid_128 vnd_uuid = BT_UUID_INIT_128(

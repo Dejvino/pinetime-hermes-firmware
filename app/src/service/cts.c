@@ -119,7 +119,7 @@ void cts_init(void)
 	generate_current_time(ct);
 }
 
-void cts_notify(void)
+void cts_loop(void)
 {	/* Current Time Service updates only when time is changed */
 	if (!ct_update) {
 		return;
