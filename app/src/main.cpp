@@ -15,6 +15,7 @@ extern "C" {
 #include "hw/button.h"
 #include "hw/battery.h"
 #include "hw/bt.h"
+#include "service/msg_store.h"
 #include "service/powersave.h"
 #include "service/cts.h"
 #include "service/cts_sync.h"
@@ -43,6 +44,7 @@ void setup(void) {
 
 	// Services
 	LOG_INF("App setup: services");
+	msg_store_init();
 	powersave_init();
 	cts_init();
 	cts_sync_init();
@@ -67,6 +69,7 @@ inline void loop() {
 	bt_loop();
 
 	// Services
+	msg_store_loop();
 	powersave_loop();
 	cts_loop();
 	cts_sync_loop();

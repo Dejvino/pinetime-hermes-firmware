@@ -1,10 +1,26 @@
 #include <ui/win.h>
 #include <ui/widget/console.h>
 #include <ui/widget/clock.h>
+extern "C" {
+#include <service/msg_store.h>
+}
 #include "console.h"
 
 static GFX* tft;
 static UiwConsole* console;
+
+static void console_log(char* line)
+{
+    console->println();
+    console->appendTimestamp();
+    console->print(line);
+}
+
+static void msg_store_listener(char* text, u16_t len)
+{
+    console->println();
+    console_log(text);
+}
 
 static void init()
 {
@@ -13,6 +29,8 @@ static void init()
 
     console = new UiwConsole(tft);
     console->init();
+
+    msg_store_register_listener(msg_store_listener);
 }
 
 static void loop()
@@ -21,9 +39,8 @@ static void loop()
 
     char line[64];
     sprintf(line, "Random text every second. %d", z_tick_get() % 99);
-    console->println();
-    console->appendTimestamp();
-    console->print(line);
+    console_log(line);
+    
     console->draw();
 }
 

@@ -17,8 +17,13 @@
 
 #include "log.h"
 #include <hw/bt.h>
+#include <service/msg_store.h>
 
 /* Custom Service Variables */
+static struct bt_uuid_128 vnd_notify_uuid = BT_UUID_INIT_128(
+	0xde, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	0xab, 0xab, 0xab, 0xab, 0xab, 0xab, 0xab, 0xab);
+
 static struct bt_uuid_128 vnd_uuid = BT_UUID_INIT_128(
 	0xf0, 0xde, 0xbc, 0x9a, 0x78, 0x56, 0x34, 0x12,
 	0x78, 0x56, 0x34, 0x12, 0x78, 0x56, 0x34, 0x12);
@@ -42,6 +47,20 @@ static ssize_t read_vnd(struct bt_conn *conn, const struct bt_gatt_attr *attr,
 				 strlen(value));
 }
 
+static ssize_t write_notify(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+			 const void *buf, u16_t len, u16_t offset,
+			 u8_t flags)
+{
+	char* msg[len+1];
+	memset(msg, 0, len+1);
+	memcpy(msg, buf, len);
+
+	msg_store_push_message(msg, len);
+
+	return len;
+}
+
+
 static ssize_t write_vnd(struct bt_conn *conn, const struct bt_gatt_attr *attr,
 			 const void *buf, u16_t len, u16_t offset,
 			 u8_t flags)
@@ -53,6 +72,8 @@ static ssize_t write_vnd(struct bt_conn *conn, const struct bt_gatt_attr *attr,
 	}
 
 	memcpy(value + offset, buf, len);
+
+	msg_store_push_message(buf, len);
 
 	return len;
 }
@@ -180,6 +201,11 @@ static ssize_t write_without_rsp_vnd(struct bt_conn *conn,
 /* Vendor Primary Service Declaration */
 BT_GATT_SERVICE_DEFINE(vnd_svc,
 	BT_GATT_PRIMARY_SERVICE(&vnd_uuid),
+	BT_GATT_CHARACTERISTIC(&vnd_notify_uuid.uuid,
+			       BT_GATT_CHRC_WRITE,
+			       BT_GATT_PERM_WRITE_ENCRYPT,
+			       read_vnd, write_notify, vnd_value),
+	/*
 	BT_GATT_CHARACTERISTIC(&vnd_enc_uuid.uuid,
 			       BT_GATT_CHRC_READ | BT_GATT_CHRC_WRITE |
 			       BT_GATT_CHRC_INDICATE,
@@ -206,7 +232,7 @@ BT_GATT_SERVICE_DEFINE(vnd_svc,
 	BT_GATT_CHARACTERISTIC(&vnd_write_cmd_uuid.uuid,
 			       BT_GATT_CHRC_WRITE_WITHOUT_RESP,
 			       BT_GATT_PERM_WRITE, NULL,
-			       write_without_rsp_vnd, &vnd_value),
+			       write_without_rsp_vnd, &vnd_value),*/
 );
 
 void bt_notify_service_init()
