@@ -11,6 +11,16 @@ LOG_MODULE_REGISTER(app_display, LOG_LEVEL_INF);
 
 struct device* display_dev;
 
+void display_scroll_region(u16_t top, u16_t middle, u16_t bottom)
+{
+	display_set_scroll_region(display_dev, top, middle, bottom);
+}
+
+void display_scroll_offset(u16_t offset)
+{
+	display_set_scroll_offset(display_dev, offset);
+}
+
 void display_init() {
 #ifdef CONFIG_ST7789V_RGB565
 	//const size_t rgb_size = 2;

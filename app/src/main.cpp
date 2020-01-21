@@ -22,6 +22,7 @@ extern "C" {
 }
 #include "ui/win.h"
 #include "ui/win/home.h"
+#include "ui/win/console.h" // TESTING
 
 void delay(int ms) {
 	k_sleep(K_MSEC(ms));
@@ -49,7 +50,9 @@ void setup(void) {
 
 	win_init();
 
-	win_activate(win_home_get());
+	//win_activate(win_home_get());
+	// TESTING:
+	win_activate(win_console_get());
 
 	LOG_INF("App setup complete.");
 }
