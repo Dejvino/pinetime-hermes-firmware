@@ -25,4 +25,8 @@ private:
 
     u16_t line;
     char line_text[64];
+
+    void draw_history_line(char* text);
+    void draw_current_line(char* text);
+    void draw_newline();
 };

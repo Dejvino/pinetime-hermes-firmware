@@ -5,6 +5,8 @@ extern "C" {
 }
 #include "console.h"
 
+static int console_w = 39;
+
 void draw_line_text(GFX* tft, u16_t basex, u16_t basey, u16_t h, char* line_text,
         u16_t line, bool highlight)
 {
@@ -47,8 +49,20 @@ void UiwConsole::append(char* text)
 
 void UiwConsole::print()
 {
-    draw_line_text(this->tft, this->basex, this->basey, this->h,
-        this->line_text, (this->line + 18) % 20, true);
+    char* subline = this->line_text;
+    char console_line[console_w + 1];
+    while (strlen(subline) > console_w) {
+        memset(console_line, 0, sizeof(console_line));
+        memcpy(console_line, subline, console_w);
+        this->draw_history_line(console_line);
+        this->draw_newline();
+        subline = subline + console_w;
+    }
+    strcpy(console_line, subline);
+    memset(this->line_text, 0, sizeof(this->line_text));
+    strcpy(this->line_text, console_line);
+
+    this->draw_current_line(this->line_text);
 }
 
 void UiwConsole::print(char* text)
@@ -59,19 +73,15 @@ void UiwConsole::print(char* text)
 
 void UiwConsole::println(char* text)
 {
-    strcat(this->line_text, text);
-
+    this->append(text);
     this->println();
 }
 
 void UiwConsole::println()
 {
-    draw_line_text(this->tft, this->basex, this->basey, this->h,
-        this->line_text, (this->line + 18) % 20, false);
-    display_scroll_offset(40 + this->line * this->h);
-
+    this->draw_history_line(this->line_text);
+    this->draw_newline();
     memset(this->line_text, 0, sizeof(this->line_text));
-    this->line = (this->line + 1) % 20;
 }
 
 void UiwConsole::appendTimestamp()
@@ -105,3 +115,21 @@ void UiwConsole::clear()
 
 void UiwConsole::deinit()
 {}
+
+void UiwConsole::draw_history_line(char* text)
+{
+    draw_line_text(this->tft, this->basex, this->basey, this->h,
+        text, (this->line + 18) % 20, false);
+}
+
+void UiwConsole::draw_current_line(char* text)
+{
+    draw_line_text(this->tft, this->basex, this->basey, this->h,
+        text, (this->line + 18) % 20, true);
+}
+
+void UiwConsole::draw_newline()
+{
+    display_scroll_offset(40 + this->line * this->h);
+    this->line = (this->line + 1) % 20;
+}

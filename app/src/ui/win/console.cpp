@@ -18,7 +18,6 @@ static void console_log(char* line)
 
 static void msg_store_listener(char* text, u16_t len)
 {
-    console->println();
     console_log(text);
 }
 
@@ -37,10 +36,12 @@ static void loop()
 {
     uiw_clock_draw(tft, 5);
 
-    char line[64];
-    sprintf(line, "Random text every second. %d", z_tick_get() % 99);
+    /*/ console test
+    char line[128];
+    sprintf(line, "Random text every second. And this one is really long! %d", (int)(z_tick_get() % 99));
     console_log(line);
-    
+    /**/
+
     console->draw();
 }
 
