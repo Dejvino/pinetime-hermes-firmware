@@ -35,7 +35,10 @@ UiwConsole::UiwConsole(GFX* tft)
 
 void UiwConsole::init()
 {
-    display_scroll_region(40, 200, 320 - 240);
+    u16_t top = 40;
+    u16_t middle = this->lines * this->h;
+    u16_t bottom = 320 - (top + middle);
+    display_scroll_region(top, middle, bottom);
 }
 
 void UiwConsole::draw()
@@ -119,17 +122,17 @@ void UiwConsole::deinit()
 void UiwConsole::draw_history_line(char* text)
 {
     draw_line_text(this->tft, this->basex, this->basey, this->h,
-        text, (this->line + 18) % 20, false);
+        text, (this->line + this->lines - 2) % this->lines, false);
 }
 
 void UiwConsole::draw_current_line(char* text)
 {
     draw_line_text(this->tft, this->basex, this->basey, this->h,
-        text, (this->line + 18) % 20, true);
+        text, (this->line + this->lines - 2) % this->lines, true);
 }
 
 void UiwConsole::draw_newline()
 {
     display_scroll_offset(40 + this->line * this->h);
-    this->line = (this->line + 1) % 20;
+    this->line = (this->line + 1) % this->lines;
 }

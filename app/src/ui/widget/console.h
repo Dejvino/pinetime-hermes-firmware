@@ -22,6 +22,7 @@ private:
     u16_t basex = 2;
     u16_t basey = 40;
     u16_t h = 10;
+    u16_t lines = 18;
 
     u16_t line;
     char line_text[64];
