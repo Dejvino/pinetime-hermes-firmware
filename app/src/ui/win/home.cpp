@@ -13,6 +13,7 @@ u8_t notify_redraw = 0;
 
 static void msg_store_listener(char* text, u16_t len)
 {
+	memset(notify, 0, sizeof(notify));
     memcpy(notify, text, len);
 	notify_redraw = 1;
 }
