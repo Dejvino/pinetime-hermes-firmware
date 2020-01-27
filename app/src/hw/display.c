@@ -1,15 +1,23 @@
-#include <logging/log.h>
-LOG_MODULE_REGISTER(app_display, LOG_LEVEL_INF);
-
 #include <zephyr.h>
 #include <device.h>
 #include <display.h>
 #include <drivers/gpio.h>
 #include <sys/util.h>
 #include <inttypes.h>
+#include "log.h"
 #include "display.h"
 
 struct device* display_dev;
+
+void display_scroll_region(u16_t top, u16_t middle, u16_t bottom)
+{
+	display_set_scroll_region(display_dev, top, middle, bottom);
+}
+
+void display_scroll_offset(u16_t offset)
+{
+	display_set_scroll_offset(display_dev, offset);
+}
 
 void display_init() {
 #ifdef CONFIG_ST7789V_RGB565
@@ -29,7 +37,7 @@ void display_init() {
 
 	display_blanking_off(display_dev);
 
-	printk("Display inited.\n");
+	LOG_INF("Display inited.");
 }
 
 struct device* display_get_device()

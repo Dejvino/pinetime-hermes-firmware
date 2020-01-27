@@ -1,5 +1,4 @@
 #include <zephyr.h>
-#include <power/reboot.h>
 #include <device.h>
 #include <string.h>
 #include <drivers/flash.h>
@@ -54,14 +53,6 @@ void storage_init()
     test++;
     storage_write(TEST_ID, &test, 1);
     */
-
-    if (IS_ENABLED(CONFIG_SETTINGS)) {
-		LOG_INF("Settings loading.");
-
-		settings_load();
-	} else {
-		LOG_INF("Settings not enabled");
-	}
 
     LOG_INF("Storage inited.");
 }

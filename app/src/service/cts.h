@@ -18,7 +18,7 @@ extern "C" {
 #endif
 
 void cts_init(void);
-void cts_notify(void);
+void cts_loop(void);
 
 typedef void (*cts_write_cb_t)(int);
 void cts_register_write_cb(cts_write_cb_t);
