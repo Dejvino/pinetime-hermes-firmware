@@ -4,6 +4,10 @@ Primarily focused on displaying time and notifications.
 
 Built using [Zephyr Project](https://zephyrproject.org/).
 
+ Home Screen | Console Screen
+------------ | -------------
+![Home Screen](screenshots/img_home.jpg) | ![Console Screen](screenshots/img_console.jpg)
+
 > **Hermes**, messenger of the gods.
 > He can convey messages between the divine realms, the underworld, and the world of mortals.
 
