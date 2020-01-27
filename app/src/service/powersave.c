@@ -2,6 +2,7 @@
 #include <hw/backlight.h>
 #include <hw/button.h>
 #include <hw/clock.h>
+#include "log.h"
 #include "powersave.h"
 
 time_t last_event = 0;
@@ -11,6 +12,8 @@ const uint8_t backlight_timeout = 3; // sec
 void powersave_init()
 {
     backlight_enable(false);
+
+    LOG_INF("Powersave inited.");
 }
 
 void powersave_loop()

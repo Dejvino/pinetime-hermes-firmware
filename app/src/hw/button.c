@@ -3,6 +3,7 @@
 #include <drivers/gpio.h>
 #include "backlight.h"
 #include "button.h"
+#include "log.h"
 
 /* change this to use another GPIO port */
 #ifndef DT_ALIAS_SW0_GPIOS_CONTROLLER
@@ -46,7 +47,7 @@ void button_pressed(struct device *gpiob, struct gpio_callback *cb,
 {
     // TODO: callback!
 	bool b = isButtonPressed();
-	printk("Button pressed: %d\n", b);
+	LOG_DBG("Button pressed: %d", b);
 	if (b) {
         backlight_enable(b);
     }
@@ -60,7 +61,7 @@ void button_init()
 
 	button_dev = device_get_binding(PORT);
 	if (!button_dev) {
-		printk("error\n");
+		LOG_ERR("Button device not found.");
 		return;
 	}
 
@@ -74,5 +75,5 @@ void button_init()
 //port 15 has to be high in order for the button to work
 	gpio_pin_configure(button_dev, 15,GPIO_DIR_OUT); //push button out
 	gpio_pin_write(button_dev, 15, button_out); //set port high
-	printk("Button inited.\n");
+	LOG_INF("Button inited.");
 }

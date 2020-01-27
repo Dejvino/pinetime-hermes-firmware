@@ -8,7 +8,7 @@ extern "C" {
 
 static GFX* tft;
 
-char notify[32];
+char notify[MSG_STORE_TEXT_LIMIT];
 u8_t notify_redraw = 0;
 
 static void msg_store_listener(char* text, u16_t len)
@@ -96,7 +96,7 @@ void home_init()
 
 void home_loop()
 {
-    uiw_clock_draw(tft, 80);
+    uiw_clock_draw(tft, 46, 90, 5, UIW_CLOCK_FORMAT_HM);
 	draw_battery();
 	draw_bt_status();
 	draw_notify();

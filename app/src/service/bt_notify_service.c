@@ -27,7 +27,7 @@ static struct bt_uuid_128 vnd_notify_uuid = BT_UUID_INIT_128(
 	0xde, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0xab, 0xab, 0xab, 0xab, 0xab, 0xab, 0xab, 0xab);
 
-static u8_t vnd_value[64];
+static u8_t vnd_value[MSG_STORE_TEXT_LIMIT];
 
 static ssize_t read_vnd(struct bt_conn *conn, const struct bt_gatt_attr *attr,
 			void *buf, u16_t len, u16_t offset)

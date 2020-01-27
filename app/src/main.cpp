@@ -1,13 +1,7 @@
 #include <zephyr.h>
-#include <device.h>
-#include <display.h>
-#include <drivers/gpio.h>
 #include <sys/util.h>
 #include <inttypes.h>
 #include <time.h>
-#include <settings/settings.h>
-#include <logging/log_ctrl.h>
-#include <power/reboot.h>
 extern "C" {
 #include "lib/log.h"
 #include "hw/storage.h"
@@ -90,28 +84,3 @@ void main(void)
 		loop();
 	}
 }
-
-#define PRODUCTION_BUILD
-#ifdef PRODUCTION_BUILD
-__weak void k_sys_fatal_error_handler(unsigned int reason,
-			       const z_arch_esf_t *esf)
-{
-	ARG_UNUSED(esf);
-
-	LOG_PANIC();
-	LOG_ERR("Running main.cpp error handler");
-
-	// TODO: log stack?
-
-#ifdef CONFIG_REBOOT
-	LOG_ERR("Rebooting.");
-	sys_reboot(SYS_REBOOT_COLD);
-#else
-	LOG_ERR("Idling.");
-	while (true) {
-		k_cpu_idle();
-	}
-#endif // CONFIG_REBOOT
-	CODE_UNREACHABLE;
-}
-#endif

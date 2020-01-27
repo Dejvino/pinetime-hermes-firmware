@@ -1,5 +1,12 @@
+#include "log.h"
 #include "GFX.h"
 #include "Adafruit-GFX-Library/Adafruit_GFX.h"
+
+#define GFX_MEMPOOL
+#ifdef GFX_MEMPOOL
+#define GFX_MEMPOOL_MAX 16384
+K_MEM_POOL_DEFINE(gfx_pool, 64, GFX_MEMPOOL_MAX, 1, 4);
+#endif
 
 #define color_size 2
 
@@ -20,10 +27,14 @@ GFX::GFX(struct device* display_dev, int16_t w, int16_t h) : Adafruit_GFX(w,h) {
 
 void GFX::drawPixel(int16_t x, int16_t y, uint16_t color)
 {
-	u8_t b[2];
-	b[0] = (color >> 8);
-	b[1] = (color >> 0);
-	display_write(display_dev, x, y, &this->pixelBufferDesc, &b);
+	if (this->buffer == NULL) {
+		u8_t b[2];
+		b[0] = (color >> 8);
+		b[1] = (color >> 0);
+		display_write(display_dev, x, y, &this->pixelBufferDesc, &b);
+	} else {
+		this->writePixel(x, y, color);
+	}
 }
 
 void GFX::startWrite() {}
@@ -77,7 +88,23 @@ void GFX::writeFillRect(int16_t x, int16_t y, int16_t w, int16_t h,
 void GFX::endWrite() {}
 
 void GFX::openBuffer(int16_t x, int16_t y, int16_t w, int16_t h) {
-	this->buffer = new u8_t[w*h*color_size];
+	size_t bufsize = w*h*color_size;
+#ifdef GFX_MEMPOOL
+	if (bufsize > GFX_MEMPOOL_MAX) {
+		this->buffer = NULL;
+		LOG_WRN("Mem pool alloc for %d B is out of bounds.", bufsize);
+	} else if (0 != (this->buffer = (u8_t*)k_mem_pool_malloc(&gfx_pool, bufsize))) {
+    	memset(this->buffer, 0, bufsize);
+		LOG_DBG("Mem pool alloc for %d B allocated.", bufsize);
+	} else {
+    	LOG_WRN("Mem pool alloc for %d B failed.", bufsize);
+	}
+#else
+	this->buffer = new u8_t[bufsize];
+	if (!this->buffer) {
+		LOG_WRN("Failed to allocate GFX buffer %d x %d pixels.", w, h);
+	}
+#endif
 	this->bx = x;
 	this->by = y;
 	this->bw = w;
@@ -87,7 +114,11 @@ void GFX::openBuffer(int16_t x, int16_t y, int16_t w, int16_t h) {
 void GFX::flushBuffer() {
 	write_buffer(display_dev, this->bx, this->by, this->bw, this->bh,
 		this->buffer);
-	delete this->buffer;
+#ifdef GFX_MEMPOOL
+	k_free(this->buffer);
+#else
+	delete[] this->buffer;
+#endif
 	this->buffer = NULL;
 }
 

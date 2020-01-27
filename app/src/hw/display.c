@@ -1,12 +1,10 @@
-#include <logging/log.h>
-LOG_MODULE_REGISTER(app_display, LOG_LEVEL_INF);
-
 #include <zephyr.h>
 #include <device.h>
 #include <display.h>
 #include <drivers/gpio.h>
 #include <sys/util.h>
 #include <inttypes.h>
+#include "log.h"
 #include "display.h"
 
 struct device* display_dev;
@@ -39,7 +37,7 @@ void display_init() {
 
 	display_blanking_off(display_dev);
 
-	printk("Display inited.\n");
+	LOG_INF("Display inited.");
 }
 
 struct device* display_get_device()

@@ -2,6 +2,7 @@
 #include <zephyr/types.h>
 
 #define MSG_STORE_SIZE 20
+#define MSG_STORE_TEXT_LIMIT 64
 
 typedef struct {
     u16_t len;
