@@ -26,6 +26,7 @@ GFX* win_get_gfx()
 void win_init()
 {
     tft = createGFX(display_get_device());
+    k_sleep(K_MSEC(100));
 	tft->fillScreen(ST77XX_BLACK);
 }
 

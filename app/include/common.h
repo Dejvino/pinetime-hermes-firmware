@@ -13,3 +13,10 @@ char* ultoa(unsigned long val, char * s, int radix);
 char* ltoa(long val, char * s, int radix);
 
 char *dtostrf(double val, signed char width, unsigned char prec, char *sout);
+
+#ifndef MIN
+#define MIN(X,Y) ((X) < (Y) ? : (X) : (Y))
+#endif
+#ifndef MAX
+#define MAX(X,Y) ((X) > (Y) ? : (X) : (Y))
+#endif
