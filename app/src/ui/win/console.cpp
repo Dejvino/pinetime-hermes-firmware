@@ -38,7 +38,7 @@ static void loop()
 
     /*/ console test
     char line[128];
-    sprintf(line, "Random text every second. And this one is really long! %d", (int)(z_tick_get() % 99));
+    sprintf(line, "Random text every second.\nAnd this one is really long! %d", (int)(z_tick_get() % 99));
     console_log(line);
     /**/
 

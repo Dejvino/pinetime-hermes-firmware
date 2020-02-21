@@ -6,6 +6,8 @@ extern "C" {
 #include "console.h"
 
 static int console_w = 39;
+static unsigned int COLOR_TEXT_OLD = 0x05A0;
+static unsigned int COLOR_TEXT_NEW = 0x0FE0;
 
 void draw_line_text(GFX* tft, u16_t basex, u16_t basey, u16_t h, char* line_text,
         u16_t line, bool highlight)
@@ -15,13 +17,13 @@ void draw_line_text(GFX* tft, u16_t basex, u16_t basey, u16_t h, char* line_text
     int y = basey + line * h;
 	
 	tft->openBuffer(x, y, w, h);
-	tft->setCursor(x, y + 1);
+	tft->setCursor(x + 1, y + 1);
 	tft->setTextSize(1);
     if (highlight) {
-	    tft->setTextColor(ST77XX_RED);
-	    tft->fillRect(x, y, w, h, ST77XX_WHITE);
+	    tft->setTextColor(COLOR_TEXT_NEW);
+	    tft->fillRect(x, y, w, h, ST77XX_BLACK);
     } else {
-        tft->setTextColor(ST77XX_GREEN);
+        tft->setTextColor(COLOR_TEXT_OLD);
 	    tft->fillRect(x, y, w, h, ST77XX_BLACK);
     }
 	tft->print(line_text);
@@ -31,6 +33,7 @@ void draw_line_text(GFX* tft, u16_t basex, u16_t basey, u16_t h, char* line_text
 UiwConsole::UiwConsole(GFX* tft)
 {
     this->tft = tft;
+    memset(this->line_text, 0, sizeof(this->line_text));
 }
 
 void UiwConsole::init()
@@ -54,12 +57,19 @@ void UiwConsole::print()
 {
     char* subline = this->line_text;
     char console_line[console_w + 1];
-    while (strlen(subline) > console_w) {
+    while (strlen(subline) > console_w
+        || (strlen(subline) > 0 && strchr(subline, '\n') != NULL)) {
+        int line_length = MIN(strlen(subline), console_w);
         memset(console_line, 0, sizeof(console_line));
-        memcpy(console_line, subline, console_w);
+        memcpy(console_line, subline, line_length);
+        char* newlinePtr = strchr(console_line, '\n');
+        if (newlinePtr != NULL) {
+            (*newlinePtr) = 0;
+            line_length = strlen(console_line) + 1;
+        }
         this->draw_history_line(console_line);
         this->draw_newline();
-        subline = subline + console_w;
+        subline = subline + line_length;
     }
     strcpy(console_line, subline);
     memset(this->line_text, 0, sizeof(this->line_text));

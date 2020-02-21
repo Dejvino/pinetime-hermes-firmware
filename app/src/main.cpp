@@ -50,7 +50,7 @@ void setup(void) {
 
 	win_activate(win_home_get());
 	// TESTING:
-	//win_activate(win_console_get());
+	win_activate(win_console_get());
 
 	LOG_INF("App setup complete.");
 }
